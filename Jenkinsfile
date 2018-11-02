@@ -8,6 +8,7 @@ podTemplate(label: 'kubernetes',
 
 		        node('kubernetes') {
 				container('maven') {
+					checkout scm
 					sh 'mvn -B -DskipTests clean package'
 				}
 				}
