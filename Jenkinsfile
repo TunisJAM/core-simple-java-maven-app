@@ -11,11 +11,8 @@ podTemplate(label: 'kubernetes',
 		}
 		stage('Test') {
 					sh 'mvn test'
-		  post {
-			always { 		  	
-					junit '**/*.xml'
-			}
-		  }
+				        junit '**/*.xml'
+		
 		}
 		stage('Deliver') {
 				sh 'jenkins/scripts/deliver.sh'
