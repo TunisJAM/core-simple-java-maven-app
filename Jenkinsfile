@@ -1,44 +1,27 @@
-pipeline {
-  agent {
-    kubernetes {
-      label 'kubernetes'
-      defaultContainer 'maven'
-      yaml 'KubernetesPod.yaml'
-    }
-  }
-  stages {
-    stage('JDK 11 Build & Test') {
-      steps {
-        container('maven-container-jdk-11') {
-          sh 'mvn --version'
-          sh 'mvn -B clean package'
-        }
-      }
-      post {
-        always {
-          junit '**/*.xml'
-        }
-      }
-    }
-    stage('Build') {
-      steps {
-        sh 'mvn -B -DskipTests clean package'
-      }
-    }
-    stage('Test') {
-      steps {
-        sh 'mvn test'
-      }
-      post {
-        always {
-          junit '**/*.xml'
-        }
-      }
-    }
-    stage('Deliver') {
-      steps {
-        sh 'jenkins/scripts/deliver.sh'
-      }
-    }
-  }
+podTemplate(label: 'kubernetes',                                                                                          
+                 containers: [                                                                                            
+                 containerTemplate(name: 'maven', image: 'maven:3.5.2-jdk-8-alpine', ttyEnabled: true, command: 'cat')   ,
+                 containerTemplate(name: 'maven-java-11', image: 'maven:3.5.2-jdk-11-alpine', ttyEnabled: true, command: 'cat')                     
+                 ]) {
+
+	node('kubernetes') {
+	   container('maven-java-11') {
+		stage('Build') {	
+					checkout scm
+					sh 'mvn -B -DskipTests clean package'
+		}
+		stage('Test') {
+					sh 'mvn test'
+				        junit '**/*.xml'
+		
+		}
+		stage('Deliver') {
+				sh 'jenkins/scripts/deliver.sh'
+		}
+
+		   
+	}
+	}
+		   
+		   
 }
