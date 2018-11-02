@@ -5,22 +5,22 @@ podTemplate(label: 'kubernetes',
 
 
 		stage('Build') {
-		  steps {
+
 		        node('kubernetes') {
 				container('maven') {
 					sh 'mvn -B -DskipTests clean package'
 				}
 				}
-		  }
+
 		}
 		stage('Test') {
-		  steps {
+
 		  		node('kubernetes') {
 				container('maven') {
 					sh 'mvn test'
 				}
 				}
-		  }
+
 		  post {
 			always { 
 		  		node('kubernetes') {
@@ -32,13 +32,13 @@ podTemplate(label: 'kubernetes',
 		  }
 		}
 		stage('Deliver') {
-		  steps {
+
 			node('kubernetes') {
 			container('maven') {
 				sh 'jenkins/scripts/deliver.sh'
 			}
 			}
-		  }
+
 		}
 
 }
